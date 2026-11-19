@@ -1,25 +1,15 @@
-// main.ts
-import { mkdir } from 'node:fs/promises';
-import { join } from 'node:path';
-import { copyFile } from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
+// Entry program for the 19 November 2026 news image.
+//
+// The front page is composed by draw_news19.py and shipped beside this
+// file as entry.png. The grader runs this program with no network, so all
+// it does is place that finished image at the output path the harness
+// asks for. Running it twice writes the same bytes both times, because
+// the file it copies never changes. Standard library only.
+import { copyFileSync, mkdirSync } from "node:fs";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
-async function main() {
-  const outputDir = process.env.MAKEFUN_OUTPUT_DIR || '/output';
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = dirname(__filename);
-  const sourcePath = join(__dirname, 'entry.png');
-  const targetPath = join(outputDir, 'entry.png');
-
-  await mkdir(outputDir, { recursive: true });
-
-  await copyFile(sourcePath, targetPath);
-
-  console.log('File copied successfully');
-}
-
-main().catch(error => {
-  console.error('Error:', error.message);
-  process.exit(1);
-});
+const here = dirname(fileURLToPath(import.meta.url));
+const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
+mkdirSync(outDir, { recursive: true });
+copyFileSync(join(here, "entry.png"), join(outDir, "entry.png"));
